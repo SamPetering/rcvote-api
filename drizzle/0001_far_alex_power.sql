@@ -1,0 +1,1 @@
+ALTER TABLE "rankings" ALTER COLUMN "candidate_id" SET NOT NULL;
