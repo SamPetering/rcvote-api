@@ -59,4 +59,5 @@ profile*
 
 # secrets
 *.local
+.env
 secret-key
