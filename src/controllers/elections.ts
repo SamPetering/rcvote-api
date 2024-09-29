@@ -6,6 +6,7 @@ import {
   Elections,
   Rankings,
   Votes,
+  type SelectElection,
 } from '../db/schemas/elections.js';
 import type {
   Ballot,
@@ -17,6 +18,20 @@ import type {
 import { generateElectionHash } from '../util.js';
 import type { AsyncControllerResult } from './types.js';
 import { ev, getElectionStatus } from './util.js';
+
+export async function listElections(): AsyncControllerResult<SelectElection[]> {
+  try {
+    const elections = await db.select().from(Elections);
+    if (!elections) throw new Error();
+    return ev(elections);
+  } catch (e) {
+    console.error(e);
+    return ev<SelectElection[]>(null, {
+      message: 'Error listing elections',
+      status: 500,
+    });
+  }
+}
 
 export async function createElection(
   creatorId: number

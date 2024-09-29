@@ -23,22 +23,6 @@ const app: FastifyPluginAsync<AppOptions> = async (
 ): Promise<void> => {
   // Place here your custom code!
 
-  // Graceful Shutdown
-  const shutdown = async () => {
-    try {
-      await fastify.close();
-      console.log('Server shut down gracefully');
-      process.exit(0);
-    } catch (err) {
-      console.error('Error during shutdown:', err);
-      process.exit(1);
-    }
-  };
-
-  // Listen for termination signals
-  process.on('SIGINT', shutdown); // Ctrl+C in the terminal
-  process.on('SIGTERM', shutdown); // Termination signal from process manager
-
   // Use Zod to compile request and response validation schemas.
   fastify.setValidatorCompiler(validatorCompiler);
   fastify.setSerializerCompiler(serializerCompiler);

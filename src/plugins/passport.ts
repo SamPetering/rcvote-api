@@ -40,7 +40,7 @@ export default fp(async (fastify) => {
       {
         clientID: requireVariable('GOOGLE_OAUTH_CLIENT_ID'),
         clientSecret: requireVariable('GOOGLE_OAUTH_CLIENT_SECRET'),
-        callbackURL: 'http://localhost:3000/api/auth/google/callback',
+        callbackURL: `http://localhost:${requireVariable('SERVER_PORT')}/api/auth/google/callback`,
       },
       async (accessToken, refreshToken, profileResp, cb) => {
         try {

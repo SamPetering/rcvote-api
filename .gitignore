@@ -61,3 +61,6 @@ profile*
 *.local
 .env
 secret-key
+
+# transpiled ts
+dist

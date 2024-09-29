@@ -22,6 +22,7 @@ import {
   getElectionInfo,
   getHasVoted,
   getVoteCount,
+  listElections,
   vote,
 } from '../../controllers/elections.js';
 import { handleError } from '../../controllers/index.js';
@@ -40,6 +41,21 @@ const elections: FastifyPluginAsyncZod = async (
   fastify,
   opts
 ): Promise<void> => {
+  fastify.route({
+    method: 'GET',
+    url: '/elections',
+    handler: async (request, reply) => {
+      const [elections, error] = await listElections();
+      if (error) {
+        handleError(reply, error);
+        return;
+      }
+      reply.send({
+        success: true,
+        elections,
+      });
+    },
+  });
   fastify.route({
     method: 'PUT',
     url: '/elections',

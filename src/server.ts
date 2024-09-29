@@ -13,8 +13,8 @@ async function startServer() {
 
   try {
     await fastify.register(app, options);
-    const port = Number(requireVariable('PORT'));
-    const host = requireVariable('HOST');
+    const port = Number(requireVariable('SERVER_PORT'));
+    const host = requireVariable('SERVER_HOST');
     await fastify.listen({ port, host });
 
     const shutdown = async () => {
