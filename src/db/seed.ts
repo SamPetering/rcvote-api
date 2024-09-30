@@ -21,15 +21,10 @@ async function insertRole(role: keyof typeof ROLES) {
 async function seed() {
   const roleKeys = Object.keys(ROLES) as (keyof typeof ROLES)[];
   for (const k of roleKeys) {
-    console.log('query start');
     const exists = await roleExists(ROLES[k]);
-    console.log('query end');
     if (!exists) {
-      console.log(`Inserting role: ${ROLES[k]}`);
       await insertRole(k);
-    } else {
-      console.log(`Role: ${ROLES[k]} already exists.`);
-    }
+    } 
   }
 }
 
