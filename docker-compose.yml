@@ -9,13 +9,24 @@ services:
       - '${POSTGRES_PORT}:${POSTGRES_PORT}'
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
   app:
-    build: .
+    build:
+      context: .
     depends_on:
       - postgres
     env_file:
       - .env
     ports:
       - '${SERVER_PORT}:${SERVER_PORT}'
+    volumes:
+      - .:/app # Mount the current directory for live updates
+      - /app/node_modules # Prevent mounting host's node_modules
+    networks:
+      - app-network
+
 volumes:
   pgdata:
+networks:
+  app-network:

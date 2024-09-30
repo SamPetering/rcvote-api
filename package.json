@@ -2,16 +2,16 @@
   "name": "rcvote-api",
   "type": "module",
   "version": "1.0.0",
+  "main": "dist/server.js",
   "scripts": {
-    "build": "pnpm build:ts",
+    "clean": "rm -rf dist",
+    "build": "pnpm clean && pnpm build:ts",
     "start": "node dist/server.js",
-    "build:ts": "tsc -p tsconfig.json",
-    "watch:ts": "tsc -w",
-    "dev": "pnpm build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"pnpm:watch:ts\" \"pnpm:dev:start\"",
-    "dev:start": "fastify start --ignore-watch=.ts$ -w -l info -P dist/app.js",
+    "build:ts": "npx tsc -p tsconfig.json",
+    "dev": "tsx --watch src/server.ts",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "node dist/db/migrate.js",
-    "db:seed": "node dist/db/seed.js"
+    "db:migrate:dev": "tsx src/db/migrate.ts",
+    "db:seed:dev": "tsx src/db/seed.ts"
   },
   "author": "Sam Petering",
   "license": "ISC",
@@ -45,11 +45,11 @@
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/pg": "^8.11.6",
     "@types/uuid": "^10.0.0",
-    "concurrently": "^8.2.2",
     "drizzle-kit": "^0.23.1",
     "fastify-tsconfig": "^2.0.0",
-    "nodemon": "^3.1.4",
     "pino-pretty": "^11.2.2",
+    "tsx": "^4.19.1",
     "typescript": "^5.5.4"
-  }
+  },
+  "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b"
 }
