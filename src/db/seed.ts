@@ -24,8 +24,9 @@ async function seed() {
     const exists = await roleExists(ROLES[k]);
     if (!exists) {
       await insertRole(k);
-    } 
+    }
   }
+  process.exit(0);
 }
 
 await seed();
