@@ -303,6 +303,7 @@ export async function getElectionInfo(
       })),
       name: electionConfig.name,
       status: getElectionStatus(electionConfig),
+      description: electionConfig.description,
     };
 
     return ev(info);

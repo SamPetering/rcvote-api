@@ -84,6 +84,7 @@ export const electionInfoResponseSchema = z.object({
   electionInfo: z.object({
     name: z.string(),
     status: electionStatusSchema,
+    description: z.string().nullable(),
     candidates: z.array(
       z.object({
         name: z.string(),
