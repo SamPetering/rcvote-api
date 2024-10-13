@@ -9,6 +9,7 @@
     "start": "node dist/server.js",
     "build:ts": "npx tsc -p tsconfig.json",
     "dev": "tsx --watch src/server.ts",
+    "db:studio": "npx drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
     "db:migrate:dev": "tsx src/db/migrate.ts",
     "db:seed:dev": "tsx src/db/seed.ts"
