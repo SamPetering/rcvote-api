@@ -251,7 +251,17 @@ export async function activateElection(
   electionHash: ElectionHash
 ): AsyncControllerResult<boolean> {
   try {
-    const [electionConfigRes] = await db
+    // check for active election, can't activate an ended election
+    const electionConfigSelectRes = await db.query.ElectionConfigs.findFirst({
+      where: eq(ElectionConfigs.electionId, electionHash),
+    });
+    if (!electionConfigSelectRes) throw new Error('Election not found');
+
+    if (getElectionStatus(electionConfigSelectRes) === 'ended')
+      throw new Error('Election already ended');
+
+    // activate election
+    const [electionConfigUpdateRes] = await db
       .update(ElectionConfigs)
       .set({
         startDate: new Date(),
@@ -261,8 +271,9 @@ export async function activateElection(
         startDate: ElectionConfigs.startDate,
         endDate: ElectionConfigs.endDate,
       });
-    if (!electionConfigRes) throw new Error();
-    return ev(getElectionStatus(electionConfigRes) === 'active');
+    if (!electionConfigUpdateRes) throw new Error('Election not updated');
+
+    return ev(getElectionStatus(electionConfigUpdateRes) === 'active');
   } catch (e) {
     console.log('ERROR', e);
     return ev<boolean>(null, {
