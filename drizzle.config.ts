@@ -6,8 +6,8 @@ export default defineConfig({
   out: 'drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    // using SERVER_HOST instead of DB_HOST to connect to the docker container
-    host: requireVariable('SERVER_HOST'),
+    host: 'localhost',
+    port: Number(requireVariable('POSTGRES_PORT')),
     user: requireVariable('POSTGRES_USER'),
     password: requireVariable('POSTGRES_PASSWORD'),
     database: requireVariable('POSTGRES_DB'),

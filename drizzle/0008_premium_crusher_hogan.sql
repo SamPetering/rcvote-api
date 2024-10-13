@@ -1,1 +1,0 @@
-ALTER TABLE "elections" DROP COLUMN IF EXISTS "active";

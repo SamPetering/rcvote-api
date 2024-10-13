@@ -4,10 +4,11 @@ import {
   pgTable,
   timestamp,
   varchar,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { Users } from './users.js';
 import { relations } from 'drizzle-orm';
-import { createSelectSchema } from 'drizzle-zod';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import type { z } from 'zod';
 
 export const Elections = pgTable('elections', {
@@ -70,18 +71,27 @@ export const ElectionCandidatesRelations = relations(
   })
 );
 
-export const Votes = pgTable('votes', {
-  id: serial('id').primaryKey(),
-  electionHash: varchar('election_id', { length: 7 }).references(
-    () => Elections.id,
-    { onDelete: 'cascade' }
-  ),
-  voterId: integer('voter_id')
-    .notNull()
-    .references(() => Users.id, { onDelete: 'set null' }),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
-});
+export const Votes = pgTable(
+  'votes',
+  {
+    id: serial('id').primaryKey(),
+    electionHash: varchar('election_id', { length: 7 }).references(
+      () => Elections.id,
+      { onDelete: 'cascade' }
+    ),
+    voterId: integer('voter_id')
+      .notNull()
+      .references(() => Users.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
+  },
+  (votes) => ({
+    uniqueVoterElection: uniqueIndex('unique_voter_election').on(
+      votes.voterId,
+      votes.electionHash
+    ),
+  })
+);
 
 export const VotesRelations = relations(Votes, ({ one, many }) => ({
   rankings: many(Rankings),
@@ -95,18 +105,27 @@ export const VotesRelations = relations(Votes, ({ one, many }) => ({
   }),
 }));
 
-export const Rankings = pgTable('rankings', {
-  id: serial('id').primaryKey(),
-  voteId: integer('vote_id')
-    .notNull()
-    .references(() => Votes.id, { onDelete: 'cascade' }),
-  candidateId: integer('candidate_id')
-    .notNull()
-    .references(() => ElectionCandidates.id, { onDelete: 'cascade' }),
-  rank: integer('rank').notNull(), // Rank starts from 1 for the highest preference
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
-});
+export const Rankings = pgTable(
+  'rankings',
+  {
+    id: serial('id').primaryKey(),
+    voteId: integer('vote_id')
+      .notNull()
+      .references(() => Votes.id, { onDelete: 'cascade' }),
+    candidateId: integer('candidate_id')
+      .notNull()
+      .references(() => ElectionCandidates.id, { onDelete: 'cascade' }),
+    rank: integer('rank').notNull(), // Rank starts from 1 for the highest preference
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').$onUpdate(() => new Date()),
+  },
+  (rankings) => ({
+    uniqueVoteCandidate: uniqueIndex('unique_vote_candidate').on(
+      rankings.voteId,
+      rankings.candidateId
+    ),
+  })
+);
 
 export const RankingsRelations = relations(Rankings, ({ one }) => ({
   vote: one(Votes, {
@@ -115,12 +134,23 @@ export const RankingsRelations = relations(Rankings, ({ one }) => ({
   }),
 }));
 
+export const insertElectionSchema = createInsertSchema(Elections);
+export type InsertElectionData = z.infer<typeof insertElectionSchema>;
 export const selectElectionSchema = createSelectSchema(Elections);
 export type SelectElection = z.infer<typeof selectElectionSchema>;
 
+export const insertElectionConfigSchema = createInsertSchema(ElectionConfigs);
+export type InsertElectionConfigData = z.infer<
+  typeof insertElectionConfigSchema
+>;
 export const selectElectionConfigSchema = createSelectSchema(ElectionConfigs);
 export type SelectElectionConfig = z.infer<typeof selectElectionConfigSchema>;
 
+export const insertElectionCandidateSchema =
+  createInsertSchema(ElectionCandidates);
+export type InsertElectionCandidateData = z.infer<
+  typeof insertElectionCandidateSchema
+>;
 export const selectElectionCandidateSchema =
   createSelectSchema(ElectionCandidates);
 export type SelectElectionCandidate = z.infer<
@@ -132,3 +162,11 @@ export const selectElectionInfo = selectElectionSchema.extend({
   candidates: selectElectionCandidateSchema,
 });
 export type SelectElectionInfo = z.infer<typeof selectElectionInfo>;
+
+export const insertVoteSchema = createInsertSchema(Votes);
+export type InsertVoteData = z.infer<typeof insertVoteSchema>;
+export const selectVoteSchema = createSelectSchema(Votes);
+export type SelectVoteData = z.infer<typeof selectVoteSchema>;
+
+export const insertRankingSchema = createInsertSchema(Rankings);
+export type InsertRankingData = z.infer<typeof insertRankingSchema>;

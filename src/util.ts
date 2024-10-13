@@ -1,5 +1,8 @@
 import { v4 } from 'uuid';
 import * as crypto from 'crypto';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export function requireVariable(key: string) {
   const v = process.env[key];

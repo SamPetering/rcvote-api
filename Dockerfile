@@ -14,4 +14,5 @@ EXPOSE ${SERVER_PORT}
 
 COPY . .
 
-CMD ["sh", "-c", "pnpm db:migrate:dev && pnpm db:seed:dev && pnpm dev"]
+CMD ["sh", "-c", "docker/run-dev.sh $SEED"]
+
