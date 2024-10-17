@@ -216,12 +216,13 @@ async function seedDevData({
   // 5. create election candidates
   const insertElectionCandidates: InsertElectionCandidateData[] = [];
   for (const e of elections) {
+    const shuffledColors = shuffle(COLORS);
     const candidates: InsertElectionCandidateData[] = range(
       0,
       numberOfCandidates
     ).map((i) => ({
       electionId: e.id,
-      color: COLORS[i & COLORS.length]!,
+      color: shuffledColors[i]!,
       name: faker.food.dish().slice(0, 64),
       description:
         i + 1 > numberOfCandidates / 2
@@ -300,7 +301,7 @@ async function seed() {
   if (getEnvironment() === 'dev') {
     await seedDevData({
       numberOfElections: 6,
-      numberOfCandidates: 3,
+      numberOfCandidates: 5,
     });
   }
 
